@@ -1,0 +1,293 @@
+/* LoginForm.module.css */
+
+/* ── Card ─────────────────────────────────────────────── */
+.card {
+  width: 100%;
+  max-width: 420px;
+  background: var(--color-card);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-md);
+  padding: var(--spacing-xl) var(--spacing-xl);
+}
+
+/* ── Brand ────────────────────────────────────────────── */
+.brand {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: var(--spacing-xl);
+  padding-bottom: var(--spacing-lg);
+  border-bottom: 1px solid #ece9e5;
+}
+
+.brandName {
+  font-size: var(--font-size-2xl);
+  font-weight: 700;
+  letter-spacing: -0.5px;
+  color: var(--color-text-primary);
+}
+
+.brandTagline {
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  color: var(--color-accent);
+  margin-top: 4px;
+}
+
+/* ── Heading ──────────────────────────────────────────── */
+.heading {
+  margin-bottom: var(--spacing-lg);
+}
+
+.title {
+  font-size: var(--font-size-xl);
+  font-weight: 600;
+  color: var(--color-text-primary);
+  line-height: 1.3;
+}
+
+.subtitle {
+  font-size: var(--font-size-sm);
+  color: var(--color-text-muted);
+  margin-top: 4px;
+}
+
+/* ── Auth Error Alert ─────────────────────────────────── */
+.authError {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--spacing-sm);
+  padding: 10px 14px;
+  border-radius: var(--radius-md);
+  background: var(--color-error-bg);
+  border: 1px solid var(--color-error-border);
+  color: var(--color-error);
+  font-size: var(--font-size-sm);
+  margin-bottom: var(--spacing-md);
+  line-height: 1.4;
+}
+
+.authError svg {
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+/* ── Form ─────────────────────────────────────────────── */
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+}
+
+/* ── Field Group ──────────────────────────────────────── */
+.fieldGroup {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.label {
+  font-size: var(--font-size-sm);
+  font-weight: 500;
+  color: var(--color-text-secondary);
+}
+
+/* ── Input Wrapper (with leading icon) ────────────────── */
+.inputWrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.inputWrapper input {
+  width: 100%;
+  padding: 11px 14px 11px 40px;
+  border: 1.5px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background: var(--color-input-bg);
+  color: var(--color-text-primary);
+  font-size: var(--font-size-sm);
+  transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+  outline: none;
+}
+
+.inputWrapper input:focus {
+  border-color: var(--color-border-focus);
+  box-shadow: 0 0 0 3px rgba(184, 115, 51, 0.12);
+}
+
+.inputWrapper input:disabled {
+  background: #f3f2f0;
+  cursor: not-allowed;
+  color: var(--color-text-muted);
+}
+
+.inputWrapper input::placeholder {
+  color: var(--color-text-light);
+}
+
+.inputWrapper.hasError input {
+  border-color: var(--color-error);
+}
+
+.inputWrapper.hasError input:focus {
+  box-shadow: 0 0 0 3px rgba(185, 28, 28, 0.1);
+}
+
+/* Password wrapper — the PasswordInput component handles its own input styles */
+.inputWrapperPassword {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+/* The PasswordInput's internal input needs left padding for the icon */
+.inputWrapperPassword > div {
+  width: 100%;
+}
+
+.inputWrapperPassword > div input {
+  padding-left: 40px;
+}
+
+/* ── Input Icon ───────────────────────────────────────── */
+.inputIcon {
+  position: absolute;
+  left: 13px;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  color: var(--color-text-light);
+  pointer-events: none;
+}
+
+/* ── Field Error ──────────────────────────────────────── */
+.fieldError {
+  font-size: var(--font-size-xs);
+  color: var(--color-error);
+}
+
+/* ── Remember Row ─────────────────────────────────────── */
+.rememberRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--spacing-sm);
+}
+
+.checkboxLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: var(--font-size-sm);
+  color: var(--color-text-secondary);
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+}
+
+/* Hide the native checkbox */
+.checkbox {
+  position: absolute;
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+/* Custom checkmark */
+.checkmark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  border: 1.5px solid var(--color-border);
+  border-radius: 3px;
+  background: var(--color-input-bg);
+  flex-shrink: 0;
+  transition: border-color var(--transition-fast), background var(--transition-fast);
+}
+
+.checkbox:checked + .checkmark {
+  background: var(--color-accent);
+  border-color: var(--color-accent);
+}
+
+.checkbox:checked + .checkmark::after {
+  content: '';
+  display: block;
+  width: 4px;
+  height: 7px;
+  border: 2px solid white;
+  border-top: none;
+  border-left: none;
+  transform: rotate(45deg) translate(-1px, -1px);
+}
+
+.checkbox:focus-visible + .checkmark {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+}
+
+.forgotLink {
+  font-size: var(--font-size-sm);
+  color: var(--color-accent);
+  font-weight: 500;
+  transition: color var(--transition-fast);
+  white-space: nowrap;
+}
+
+.forgotLink:hover {
+  color: var(--color-accent-hover);
+  text-decoration: underline;
+}
+
+/* ── Submit Button ────────────────────────────────────── */
+.submitBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--spacing-sm);
+  width: 100%;
+  padding: 13px var(--spacing-lg);
+  background: var(--color-accent);
+  color: #fff;
+  font-size: var(--font-size-base);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  border-radius: var(--radius-md);
+  border: none;
+  cursor: pointer;
+  transition: background var(--transition-fast), transform var(--transition-fast),
+              box-shadow var(--transition-fast);
+  margin-top: 4px;
+}
+
+.submitBtn:hover:not(:disabled) {
+  background: var(--color-accent-hover);
+  box-shadow: 0 4px 12px rgba(184, 115, 51, 0.35);
+}
+
+.submitBtn:active:not(:disabled) {
+  background: var(--color-accent-active);
+  transform: translateY(1px);
+  box-shadow: none;
+}
+
+.submitBtn:disabled {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+/* ── Spinner ──────────────────────────────────────────── */
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.spinner {
+  animation: spin 0.8s linear infinite;
+  flex-shrink: 0;
+}

@@ -1,0 +1,243 @@
+/* LoginPage.module.css */
+
+/* ── Full-screen two-column layout ───────────────────── */
+.page {
+  display: flex;
+  height: 100vh;
+  min-height: 600px;
+  overflow: hidden;
+}
+
+/* ══════════════════════════════════════════════════════
+   LEFT PANEL
+   ══════════════════════════════════════════════════════ */
+.leftPanel {
+  position: relative;
+  flex: 0 0 55%;
+  width: 55%;
+  background-image: url('/assets/industrial-bg.jpg');
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+/* Dark overlay — preserves text legibility over the photo */
+.overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    135deg,
+    rgba(18, 20, 22, 0.88) 0%,
+    rgba(24, 28, 32, 0.82) 50%,
+    rgba(30, 35, 40, 0.78) 100%
+  );
+  z-index: 0;
+}
+
+.leftContent {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  height: 100%;
+  padding: 52px 56px;
+}
+
+/* ── Decorative top rule ──────────────────────────────── */
+.decorRule {
+  width: 48px;
+  height: 3px;
+  background: var(--color-accent);
+  border-radius: 2px;
+  margin-bottom: var(--spacing-xl);
+}
+
+/* ── Hero Text ────────────────────────────────────────── */
+.heroText {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.welcomeTo {
+  font-size: var(--font-size-xl);
+  font-weight: 300;
+  color: rgba(245, 244, 242, 0.75);
+  letter-spacing: 0.02em;
+  margin-bottom: 8px;
+}
+
+.brandHero {
+  font-size: clamp(2.5rem, 5vw, 4rem);
+  font-weight: 700;
+  color: var(--color-text-inverse);
+  letter-spacing: -1.5px;
+  line-height: 1;
+  margin-bottom: var(--spacing-md);
+}
+
+.tagline {
+  font-size: var(--font-size-base);
+  font-weight: 400;
+  color: rgba(245, 244, 242, 0.6);
+  letter-spacing: 0.03em;
+}
+
+/* ── ERP Quote List ───────────────────────────────────── */
+.quoteList {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: var(--spacing-3xl);
+}
+
+.quoteItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: var(--font-size-sm);
+  color: rgba(245, 244, 242, 0.72);
+  font-weight: 400;
+  letter-spacing: 0.01em;
+}
+
+.quoteIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border: 1px solid rgba(184, 115, 51, 0.4);
+  border-radius: var(--radius-sm);
+  color: var(--color-accent);
+  flex-shrink: 0;
+}
+
+/* ── Left Footer ──────────────────────────────────────── */
+.leftFooter {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-md);
+  margin-top: var(--spacing-3xl);
+}
+
+.decorRuleShort {
+  width: 32px;
+  height: 1px;
+  background: rgba(184, 115, 51, 0.45);
+}
+
+.motto {
+  font-size: var(--font-size-xs);
+  font-weight: 500;
+  letter-spacing: 0.2em;
+  color: rgba(245, 244, 242, 0.4);
+  text-transform: uppercase;
+}
+
+/* ══════════════════════════════════════════════════════
+   RIGHT PANEL
+   ══════════════════════════════════════════════════════ */
+.rightPanel {
+  flex: 1;
+  background: var(--color-panel-right);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--spacing-2xl) var(--spacing-xl);
+  overflow-y: auto;
+}
+
+/* ══════════════════════════════════════════════════════
+   RESPONSIVE — Tablet (≤1024px)
+   ══════════════════════════════════════════════════════ */
+@media (max-width: 1024px) {
+  .leftPanel {
+    flex: 0 0 45%;
+    width: 45%;
+  }
+
+  .leftContent {
+    padding: 40px 36px;
+  }
+
+  .brandHero {
+    font-size: clamp(2rem, 4vw, 3rem);
+  }
+
+  .quoteList {
+    margin-top: var(--spacing-xl);
+  }
+}
+
+/* ══════════════════════════════════════════════════════
+   RESPONSIVE — Mobile (≤768px)
+   ══════════════════════════════════════════════════════ */
+@media (max-width: 768px) {
+  .page {
+    flex-direction: column;
+    height: auto;
+    min-height: 100vh;
+  }
+
+  .leftPanel {
+    flex: none;
+    width: 100%;
+    min-height: 200px;
+    max-height: 260px;
+  }
+
+  .leftContent {
+    padding: 28px 24px;
+    justify-content: flex-end;
+  }
+
+  .decorRule {
+    display: none;
+  }
+
+  .heroText {
+    flex: none;
+    justify-content: flex-end;
+  }
+
+  .welcomeTo {
+    font-size: var(--font-size-sm);
+  }
+
+  .brandHero {
+    font-size: 2rem;
+  }
+
+  .tagline {
+    font-size: var(--font-size-xs);
+  }
+
+  /* Hide quote list and footer on mobile to avoid long scroll */
+  .quoteList,
+  .leftFooter {
+    display: none;
+  }
+
+  .rightPanel {
+    flex: 1;
+    padding: var(--spacing-xl) var(--spacing-md);
+    align-items: flex-start;
+    padding-top: var(--spacing-xl);
+  }
+}
+
+/* ══════════════════════════════════════════════════════
+   RESPONSIVE — Very small screens (≤400px)
+   ══════════════════════════════════════════════════════ */
+@media (max-width: 400px) {
+  .rightPanel {
+    padding: var(--spacing-md);
+  }
+}

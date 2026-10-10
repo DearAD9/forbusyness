@@ -1,0 +1,327 @@
+/* DashboardPage.module.css — Professional Enterprise ERP */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  width: 100%;
+  max-width: 100%;
+  margin: 0;
+  padding-bottom: 24px;
+  box-sizing: border-box;
+  animation: fadeIn 250ms ease-out both;
+}
+
+/* ── Command Header Bar ────────────────────────────────────────── */
+.commandHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+  padding-bottom: 4px;
+}
+
+.headerLeft {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+.systemBadgeRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.liveIndicator {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 600;
+  color: #059669;
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  padding: 1px 8px;
+  border-radius: 999px;
+  font-size: 0.6875rem;
+}
+
+.pulseDot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: #10b981;
+  box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+  animation: pulseSubtle 2s infinite ease-in-out;
+}
+
+.dividerDot {
+  color: #cbd5e1;
+}
+
+.fyTag {
+  font-weight: 600;
+  color: #475569;
+}
+
+.lastUpdatedText {
+  color: #94a3b8;
+  font-variant-numeric: tabular-nums;
+}
+
+.headingTitle {
+  font-size: 1.375rem;
+  font-weight: 800;
+  color: #0f172a;
+  letter-spacing: -0.02em;
+  margin: 0;
+}
+
+.headingSubtitle {
+  font-size: 0.8125rem;
+  color: #64748b;
+  margin: 0;
+}
+
+.headerControls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+/* Period Segmented Filter */
+.periodFilter {
+  display: flex;
+  background: #e2e8f0;
+  padding: 3px;
+  border-radius: 8px;
+  border: 1px solid #cbd5e1;
+}
+
+.periodBtn {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #475569;
+  padding: 5px 11px;
+  border-radius: 6px;
+  background: transparent;
+  transition: all 140ms ease;
+  white-space: nowrap;
+}
+
+.periodBtn:hover {
+  color: #0f172a;
+}
+
+.periodBtnActive {
+  background: #ffffff;
+  color: #6d28d9;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08);
+}
+
+.iconActionBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  color: #475569;
+  transition: all 140ms ease;
+  cursor: pointer;
+}
+
+.iconActionBtn:hover {
+  background: #f8fafc;
+  color: #0f172a;
+  border-color: #94a3b8;
+}
+
+.spinning svg {
+  animation: spin 600ms linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to   { transform: rotate(360deg); }
+}
+
+.reportsShortcutBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6d28d9;
+  background: #f5f3ff;
+  border: 1px solid #ddd6fe;
+  padding: 6px 12px;
+  border-radius: 8px;
+  transition: all 140ms ease;
+  white-space: nowrap;
+}
+
+.reportsShortcutBtn:hover {
+  background: #ede9fe;
+  border-color: #c4b5fd;
+  color: #5b21b6;
+}
+
+/* ── Operational Quick Action Bar ──────────────────────────────── */
+.quickActionBar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+  padding: 10px 14px;
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+  box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
+}
+
+.qaBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.7813rem;
+  font-weight: 600;
+  white-space: nowrap;
+  transition: all 140ms cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
+}
+
+.qaBtn:active {
+  transform: translateY(1px);
+}
+
+.qaBtnPrimary {
+  background: #6d28d9;
+  color: #ffffff;
+  border: 1px solid #5b21b6;
+  box-shadow: 0 1px 2px rgba(109, 40, 217, 0.2);
+}
+
+.qaBtnPrimary:hover {
+  background: #5b21b6;
+}
+
+.qaBtnSecondary {
+  background: #f8fafc;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+}
+
+.qaBtnSecondary:hover {
+  background: #f1f5f9;
+  color: #0f172a;
+  border-color: #94a3b8;
+}
+
+.qaIcon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ── Top Executive KPI Grid ────────────────────────────────────── */
+.kpiGrid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 12px;
+  width: 100%;
+}
+
+/* ── Analytical Dual Rows ──────────────────────────────────────── */
+.analyticalRow {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 340px;
+  gap: 16px;
+  align-items: stretch;
+  width: 100%;
+}
+
+.mainCol {
+  min-width: 0;
+}
+
+.sideCol {
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* ── Full Width Row ────────────────────────────────────────────── */
+.fullRow {
+  width: 100%;
+}
+
+/* ── Tables Row ────────────────────────────────────────────────── */
+.tablesRow {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  align-items: stretch;
+  width: 100%;
+}
+
+.tableCol {
+  min-width: 0;
+}
+
+/* ── Responsive Breakpoints ────────────────────────────────────── */
+@media (max-width: 1380px) {
+  .kpiGrid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+@media (max-width: 1120px) {
+  .analyticalRow {
+    grid-template-columns: 1fr;
+  }
+  .tablesRow {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 860px) {
+  .kpiGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .commandHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .headerControls {
+    width: 100%;
+    justify-content: space-between;
+  }
+}
+
+@media (max-width: 540px) {
+  .kpiGrid {
+    grid-template-columns: 1fr;
+  }
+  .periodFilter {
+    width: 100%;
+    overflow-x: auto;
+  }
+  .quickActionBar {
+    gap: 6px;
+  }
+  .qaBtn {
+    font-size: 0.7188rem;
+    padding: 5px 9px;
+  }
+}

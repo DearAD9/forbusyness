@@ -1,0 +1,191 @@
+# ==============================================================================
+# Git Ignore Configuration for Forbusyness ERP
+# ==============================================================================
+
+# ------------------------------------------------------------------------------
+# 1. Environment & Secret Credentials
+# ------------------------------------------------------------------------------
+.env
+.env.*
+*.env
+*.env.*
+*.local
+*.secret
+*.token
+*.credentials
+credentials.json
+client_secret*.json
+
+# SSL / TLS / SSH / Crypto private keys & certificates
+*.key
+*.pem
+*.cert
+*.crt
+*.pfx
+*.p12
+*.pkcs12
+*.asc
+id_rsa*
+id_ed25519*
+.htpasswd
+
+# Explicit whitelist: allow example / template environment files
+!.env.example
+!.env.*.example
+!*.env.example
+!backend/.env.example
+
+# ------------------------------------------------------------------------------
+# 2. Local Databases, Binaries & Database Backups
+# ------------------------------------------------------------------------------
+# PostgreSQL local binaries & runtime database clusters (project-specific)
+backend/pgsql/
+backend/pgsql_data/
+pgsql/
+pgsql_data/
+
+# SQLite & local relational databases
+*.sqlite
+*.sqlite3
+*.db
+*.db3
+*.s3db
+*.sl3
+*.db-journal
+*.db-shm
+*.db-wal
+*.sqlite3-journal
+
+# Database dumps, backups, and raw exports
+*.dump
+*.dmp
+*.sql.gz
+*.sql.tar
+*.sql.bak
+*.bak
+*.backup
+*backup*.sql
+*dump*.sql
+backups/
+dumps/
+db_backups/
+
+# ------------------------------------------------------------------------------
+# 3. Confidential Business Data, Invoices, Receipts & Customer Info
+# ------------------------------------------------------------------------------
+invoices/
+receipts/
+exports/
+customer_data/
+statements/
+reports_export/
+temp_data/
+data_exports/
+
+# Exported and generated document formats
+*.pdf
+*.xlsx
+*.xls
+*.csv
+!public/**/*.csv
+!src/**/*.csv
+
+# ------------------------------------------------------------------------------
+# 4. Dependencies, Build Outputs & Package Managers
+# ------------------------------------------------------------------------------
+node_modules/
+dist/
+dist-ssr/
+build/
+out/
+.vite/
+.turbo/
+.parcel-cache/
+.cache/
+.npm/
+
+# Explicit whitelist: preserve lockfile
+!package-lock.json
+
+# ------------------------------------------------------------------------------
+# 5. Python Virtual Environments, Bytecode & Testing Caches
+# ------------------------------------------------------------------------------
+backend/venv/
+venv/
+.venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# Bytecode & Python runtime caches
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+develop-eggs/
+eggs/
+.eggs/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Testing & linter cache directories
+.pytest_cache/
+.coverage
+.coverage.*
+htmlcov/
+.mypy_cache/
+.ruff_cache/
+.oxlint_cache/
+
+# ------------------------------------------------------------------------------
+# 6. Logs & Runtime Temporary Files
+# ------------------------------------------------------------------------------
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+*.pid
+*.seed
+*.pid.lock
+*.tmp
+*.temp
+tmp/
+temp/
+
+# ------------------------------------------------------------------------------
+# 7. Operating System & IDE Specific Files
+# ------------------------------------------------------------------------------
+# OS metadata files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+[tT]humbs.db
+Desktop.ini
+
+# IDE & Editor settings
+.idea/
+.vscode/*
+!.vscode/extensions.json
+!.vscode/settings.json
+!.vscode/launch.json
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+*.swo
+*.swn
+*.swp
+*.sublime-workspace
+*.sublime-project
+*.sublime-history

@@ -1,0 +1,228 @@
+/* SalesPurchaseChart.module.css — Professional Enterprise Chart */
+
+.card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.02);
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid #f1f5f9;
+  background: #fafafc;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.titleGroup {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.iconTag {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: #f5f3ff;
+  border: 1px solid #ddd6fe;
+  flex-shrink: 0;
+}
+
+.title {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.subtitle {
+  font-size: 0.7188rem;
+  color: #64748b;
+  margin: 1px 0 0;
+}
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.segmentedControl {
+  display: flex;
+  background: #f1f5f9;
+  padding: 2px;
+  border-radius: 7px;
+  border: 1px solid #e2e8f0;
+}
+
+.segmentBtn {
+  font-size: 0.7188rem;
+  font-weight: 600;
+  padding: 4px 9px;
+  border-radius: 5px;
+  color: #64748b;
+  background: transparent;
+  transition: all 140ms ease;
+  white-space: nowrap;
+}
+
+.segmentBtn:hover {
+  color: #0f172a;
+}
+
+.segmentActive {
+  background: #ffffff;
+  color: #6d28d9;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
+}
+
+.rangeSelect {
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: #334155;
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  padding: 4px 10px;
+  background: #ffffff;
+  cursor: pointer;
+  outline: none;
+  transition: border-color 150ms ease;
+}
+
+.rangeSelect:focus {
+  border-color: #6d28d9;
+}
+
+.chartCanvas {
+  padding: 16px 14px 6px 4px;
+}
+
+/* ── Custom tooltip ───────────────────────────────── */
+.tooltip {
+  background: #0f172a;
+  border: 1px solid #334155;
+  border-radius: 9px;
+  padding: 10px 14px;
+  font-size: 0.75rem;
+  color: #f8fafc;
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+  min-width: 190px;
+}
+
+.tooltipHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+  padding-bottom: 6px;
+  border-bottom: 1px solid #1e293b;
+}
+
+.tooltipDate {
+  font-weight: 600;
+  color: #cbd5e1;
+  font-size: 0.7188rem;
+}
+
+.tooltipMarginBadge {
+  font-size: 0.6875rem;
+  font-weight: 700;
+  background: #064e3b;
+  color: #6ee7b7;
+  padding: 1px 5px;
+  border-radius: 4px;
+}
+
+.tooltipBody {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.tooltipRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.tooltipSpreadRow {
+  margin-top: 4px;
+  padding-top: 5px;
+  border-top: 1px dashed #334155;
+  font-weight: 600;
+}
+
+.tooltipDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.tooltipLabel {
+  flex: 1;
+  color: #94a3b8;
+}
+
+.tooltipValue {
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ── Summary footer bar ──────────────────────────── */
+.summaryBar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 18px;
+  background: #f8fafc;
+  border-top: 1px solid #f1f5f9;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.metricItem {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.metricLabel {
+  font-size: 0.6875rem;
+  font-weight: 600;
+  color: #64748b;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+}
+
+.metricVal {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #0f172a;
+  font-variant-numeric: tabular-nums;
+}
+
+.metricDivider {
+  width: 1px;
+  height: 24px;
+  background: #e2e8f0;
+}
+
+@media (max-width: 640px) {
+  .metricDivider {
+    display: none;
+  }
+}

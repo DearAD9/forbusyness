@@ -1,0 +1,43 @@
+/* ERPLayout.module.css */
+
+:root {
+  --sidebar-width-open:   220px;
+  --sidebar-width-closed: 60px;
+  --topbar-height:        56px;
+}
+
+.shell {
+  display: flex;
+  height: 100vh;
+  background: var(--color-panel-right, #f3f2f0);
+  overflow: hidden;
+}
+
+/* ── Main panel ─────────────────────────────────────── */
+.main {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  transition: margin-left 200ms ease;
+}
+
+/* ── Content scroll area ────────────────────────────── */
+.content {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 20px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-sizing: border-box;
+}
+
+/* ── Mobile overlay ─────────────────────────────────── */
+@media (max-width: 768px) {
+  .content {
+    padding: 16px;
+  }
+}

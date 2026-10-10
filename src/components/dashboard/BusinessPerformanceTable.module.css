@@ -1,0 +1,193 @@
+/* BusinessPerformanceTable.module.css — Professional Enterprise ERP */
+
+.card {
+  background: #ffffff;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04), 0 1px 2px rgba(15, 23, 42, 0.02);
+  display: flex;
+  flex-direction: column;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 18px;
+  border-bottom: 1px solid #f1f5f9;
+  background: #fafafc;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.titleRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.iconTag {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: #f5f3ff;
+  border: 1px solid #ddd6fe;
+  flex-shrink: 0;
+}
+
+.title {
+  font-size: 0.875rem;
+  font-weight: 700;
+  color: #0f172a;
+  letter-spacing: -0.01em;
+  margin: 0;
+}
+
+.subtitle {
+  font-size: 0.7188rem;
+  color: #64748b;
+  margin: 1px 0 0;
+}
+
+.headerRight {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.fullReportBtn {
+  font-size: 0.75rem;
+  font-weight: 600;
+  color: #6d28d9;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid #ddd6fe;
+  background: #f5f3ff;
+  transition: all 140ms ease;
+}
+
+.fullReportBtn:hover {
+  background: #ede9fe;
+  color: #5b21b6;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+  text-align: left;
+}
+
+.thParticulars {
+  padding: 10px 18px;
+  font-size: 0.7188rem;
+  font-weight: 700;
+  color: #475569;
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+  width: 28%;
+  min-width: 180px;
+}
+
+.th {
+  padding: 10px 14px;
+  font-size: 0.7188rem;
+  font-weight: 600;
+  color: #64748b;
+  background: #f8fafc;
+  border-bottom: 1px solid #e2e8f0;
+  text-align: right;
+  cursor: pointer;
+  transition: all 140ms ease;
+  white-space: nowrap;
+}
+
+.th:hover {
+  color: #0f172a;
+  background: #f1f5f9;
+}
+
+.thActive {
+  color: #6d28d9;
+  background: #f5f3ff;
+  font-weight: 700;
+}
+
+.activeDot {
+  display: inline-block;
+  margin-left: 4px;
+  font-size: 0.625rem;
+  color: #6d28d9;
+}
+
+.tr {
+  border-bottom: 1px solid #f1f5f9;
+  transition: background 120ms ease;
+}
+
+.tr:hover {
+  background: #fafafc;
+}
+
+.trHighlight {
+  background: #faf5ff;
+  border-bottom: 1px solid #f3e8ff;
+}
+
+.trHighlight:hover {
+  background: #f5f3ff;
+}
+
+.tdLabel {
+  padding: 10px 18px;
+  font-weight: 500;
+  color: #1e293b;
+  white-space: nowrap;
+}
+
+.trHighlight .tdLabel {
+  font-weight: 700;
+  color: #5b21b6;
+}
+
+.rowLabelText {
+  display: inline-block;
+}
+
+.td {
+  padding: 10px 14px;
+  text-align: right;
+  color: #334155;
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.tdActive {
+  background: rgba(109, 40, 217, 0.03);
+  font-weight: 600;
+}
+
+.profitVal {
+  color: #059669;
+  font-weight: 600;
+}
+
+.trHighlight .profitVal {
+  font-weight: 700;
+  color: #047857;
+}
+
+.cogsVal {
+  color: #64748b;
+}
