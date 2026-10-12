@@ -28,11 +28,11 @@ export const INITIAL_CHART_OF_ACCOUNTS = [
   { id: '1010', code: '1010', name: 'Primary Bank Current Account', category: 'Assets', type: 'Bank', balance: 0, desc: 'Primary clearing & RTGS disbursement account' },
   { id: '1020', code: '1020', name: 'Secondary Bank Account', category: 'Assets', type: 'Bank', balance: 0, desc: 'Operational billing & collections account' },
   { id: '1030', code: '1030', name: 'Main Cash Vault & Petty Cash', category: 'Assets', type: 'Cash', balance: 0, desc: 'Cash counter & daily petty expenses' },
-  { id: '1040', code: '1040', name: 'Accounts Receivable (Trade Debtors)', category: 'Assets', type: 'Receivable', balance: 0, desc: 'Outstanding customer dues & billed invoices' },
-  { id: '1050', code: '1050', name: 'Inventory Valuation', category: 'Assets', type: 'Inventory', balance: 0, desc: 'Asset value of physical stock in yard' },
+  { id: '1040', code: '1040', name: 'Accounts Receivable (Customers)', category: 'Assets', type: 'Receivable', balance: 0, desc: 'Outstanding customer dues & billed invoices' },
+  { id: '1050', code: '1050', name: 'Inventory Valuation', category: 'Assets', type: 'Inventory', balance: 0, desc: 'Asset value of physical stock' },
 
   // ── Liabilities
-  { id: '2010', code: '2010', name: 'Accounts Payable (Trade Creditors)', category: 'Liabilities', type: 'Payable', balance: 0, desc: 'Outstanding dues owed to suppliers' },
+  { id: '2010', code: '2010', name: 'Accounts Payable (Suppliers)', category: 'Liabilities', type: 'Payable', balance: 0, desc: 'Outstanding dues owed to suppliers' },
   { id: '2030', code: '2030', name: 'Working Capital OD / Credit Facility', category: 'Liabilities', type: 'Bank Loan', balance: 0, desc: 'Revolving credit facility' },
 
   // ── Income
@@ -42,8 +42,8 @@ export const INITIAL_CHART_OF_ACCOUNTS = [
 
   // ── Expenses
   { id: '4010', code: '4010', name: 'Cost of Materials (Purchases)', category: 'Expenses', type: 'COGS', balance: 0, desc: 'Direct inward procurement of materials' },
-  { id: '4020', code: '4020', name: 'Power & Utility Expenses', category: 'Expenses', type: 'Operating', balance: 0, desc: 'Electricity and yard utilities' },
-  { id: '4030', code: '4030', name: 'Logistics & Handling Fees', category: 'Expenses', type: 'Operating', balance: 0, desc: 'Transportation, freight, and crane rentals' },
+  { id: '4020', code: '4020', name: 'Power & Utility Expenses', category: 'Expenses', type: 'Operating', balance: 0, desc: 'Electricity and operational utilities' },
+  { id: '4030', code: '4030', name: 'Logistics & Handling Fees', category: 'Expenses', type: 'Operating', balance: 0, desc: 'Transportation, freight, and logistics' },
   { id: '4040', code: '4040', name: 'Wages & Operating Overheads', category: 'Expenses', type: 'Operating', balance: 0, desc: 'Staff wages and office overheads' },
 ];
 

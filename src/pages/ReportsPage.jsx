@@ -1,446 +1,392 @@
 /**
  * ReportsPage — Forbusyness Web ERP
  *
- * Executive Business Intelligence & Financial Analytics Command Center.
- * Features:
- * - 4 Summary KPI cards: Turnover, Gross Profit, Net Operating Profit, Stock Valuation
- * - 4 Report Modules:
- *   1. Profit & Loss (P&L) Statement
- *   2. Sales vs Sourcing Commercial Trend (Recharts AreaChart)
- *   3. Stock Valuation & Inventory Audit
- *   4. Receivables & Payables Ageing Analysis
- * - 1-Click CSV Export & Instant Print Layout
+ * Comprehensive ERP Reporting & Business Intelligence Center.
+ * Unified architecture supporting:
+ * - 9 Core Business Domains: Overview, Sales, Purchases, Ledgers, Financials (P&L),
+ *   Outstanding & Aging, Stock & Products, Profitability, and Tax & GST.
+ * - Deep linking with URL parameters (?cat=...&sub=...)
+ * - Multi-period date filtering (Today, Week, Month, Quarter, FY 2026-27, Custom)
+ * - 1-Click universal export to CSV and Excel (.xls)
+ * - Print-optimized layout
+ * - Domain-neutral, clear, accessible terminology (Sales, Purchases, Stock, Products, Ledgers)
  */
 
-import { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
-import {
-  AreaChart,
-  Area,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  ResponsiveContainer,
-  BarChart,
-  Bar,
-  Legend,
-} from 'recharts';
+import React, { useState, useEffect, useCallback } from 'react';
+import { useSearchParams, useNavigate } from 'react-router-dom';
 import ERPLayout from '../components/layout/ERPLayout';
-import { getExecutiveReportData } from '../services/reportService';
+import ReportsNavigation, { REPORT_CATEGORIES } from '../components/reports/ReportsNavigation';
+import ReportFilterBar from '../components/reports/ReportFilterBar';
+
+import ReportsOverviewSection from '../components/reports/ReportsOverviewSection';
+import SalesReportsSection from '../components/reports/SalesReportsSection';
+import PurchaseReportsSection from '../components/reports/PurchaseReportsSection';
+import LedgerReportsSection from '../components/reports/LedgerReportsSection';
+import FinancialReportsSection from '../components/reports/FinancialReportsSection';
+import OutstandingReportsSection from '../components/reports/OutstandingReportsSection';
+import InventoryReportsSection from '../components/reports/InventoryReportsSection';
+import ProfitabilityReportsSection from '../components/reports/ProfitabilityReportsSection';
+import TaxReportsSection from '../components/reports/TaxReportsSection';
+
+import {
+  getExecutiveOverview,
+  getSalesReportData,
+  getPurchaseReportData,
+  getLedgerReportData,
+  getFinancialReportData,
+  getOutstandingReportData,
+  getInventoryReportData,
+  getProfitabilityReportData,
+  getTaxReportData,
+  exportReportToCsv,
+  exportReportToExcel,
+} from '../services/reportService';
+
 import styles from './ReportsPage.module.css';
 
-function fmtINR(val) {
-  return new Intl.NumberFormat('en-IN', {
-    style: 'currency',
-    currency: 'INR',
-    maximumFractionDigits: 0,
-  }).format(val || 0);
-}
+const DEFAULT_SUB_MAP = {
+  overview: '',
+  sales: 'register',
+  purchases: 'register',
+  ledgers: 'customerLedger',
+  financials: 'pl',
+  outstanding: 'customerOutstanding',
+  inventory: 'stockSummary',
+  profitability: 'product',
+  tax: 'gstr1',
+};
 
 export default function ReportsPage() {
+  const [searchParams, setSearchParams] = useSearchParams();
   const navigate = useNavigate();
 
-  const [activeTab, setActiveTab] = useState('pl'); // 'pl' | 'trend' | 'stock' | 'ageing'
-  const [period, setPeriod] = useState('Quarter'); // 'Month' | 'Quarter' | 'Year'
+  // Active Category & Sub-report from URL query params
+  const catParam = searchParams.get('cat') || 'overview';
+  const subParam = searchParams.get('sub') || DEFAULT_SUB_MAP[catParam] || '';
+  const partyIdParam = searchParams.get('partyId') || '';
+
+  const [activeCategory, setActiveCategory] = useState(catParam);
+  const [activeSub, setActiveSub] = useState(subParam);
+  const [selectedPartyId, setSelectedPartyId] = useState(partyIdParam);
+
+  // Filters State
+  const [preset, setPreset] = useState('all');
+  const [dateFrom, setDateFrom] = useState('');
+  const [dateTo, setDateTo] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
+
+  // Report Data & Loading State
   const [reportData, setReportData] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
 
-  useEffect(() => {
-    let mounted = true;
-    (async () => {
-      try {
-        const data = await getExecutiveReportData();
-        if (mounted) {
-          setReportData(data);
-        }
-      } catch (err) {
-        console.error('Failed to load report data:', err);
-      } finally {
-        if (mounted) setIsLoading(false);
-      }
-    })();
+  // Synchronize URL parameters when state changes
+  const updateUrl = useCallback((newCat, newSub, partyId = '') => {
+    const params = { cat: newCat };
+    if (newSub) params.sub = newSub;
+    if (partyId) params.partyId = partyId;
+    setSearchParams(params, { replace: true });
+  }, [setSearchParams]);
 
-    return () => { mounted = false; };
-  }, [period]);
+  // Synchronize component state with URL params on navigation
+  useEffect(() => {
+    if (catParam !== activeCategory) {
+      setActiveCategory(catParam);
+      setActiveSub(subParam || DEFAULT_SUB_MAP[catParam] || '');
+    } else if (subParam && subParam !== activeSub) {
+      setActiveSub(subParam);
+    }
+    if (partyIdParam && partyIdParam !== selectedPartyId) {
+      setSelectedPartyId(partyIdParam);
+    }
+  }, [catParam, subParam, partyIdParam]);
+
+  // Handle category change
+  const handleSelectCategory = (catId) => {
+    const defaultSub = DEFAULT_SUB_MAP[catId] || '';
+    setActiveCategory(catId);
+    setActiveSub(defaultSub);
+    updateUrl(catId, defaultSub);
+  };
+
+  // Handle sub-category change
+  const handleSelectSub = (subId) => {
+    setActiveSub(subId);
+    updateUrl(activeCategory, subId, selectedPartyId);
+  };
+
+  // Cross-category navigation helper (e.g. from Overview or Outstanding cards)
+  const handleNavigate = (catId, subId, partyId = '') => {
+    setActiveCategory(catId);
+    setActiveSub(subId);
+    if (partyId) setSelectedPartyId(partyId);
+    updateUrl(catId, subId, partyId);
+  };
+
+  const handleNavigateToLedger = (ledgerSub, partyId) => {
+    setActiveCategory('ledgers');
+    setActiveSub(ledgerSub);
+    setSelectedPartyId(partyId);
+    updateUrl('ledgers', ledgerSub, partyId);
+  };
+
+  // ── Fetch Report Data ──────────────────────────────────────────────────
+  const fetchReportData = useCallback(async () => {
+    setIsLoading(true);
+    try {
+      const filterOpts = {
+        preset,
+        dateFrom,
+        dateTo,
+        search: searchQuery,
+      };
+
+      let result = null;
+      switch (activeCategory) {
+        case 'overview':
+          result = await getExecutiveOverview(filterOpts);
+          break;
+        case 'sales':
+          result = await getSalesReportData({ ...filterOpts, subType: activeSub });
+          break;
+        case 'purchases':
+          result = await getPurchaseReportData({ ...filterOpts, subType: activeSub });
+          break;
+        case 'ledgers':
+          result = await getLedgerReportData({
+            ...filterOpts,
+            subType: activeSub,
+            partyId: selectedPartyId,
+          });
+          break;
+        case 'financials':
+          result = await getFinancialReportData({ ...filterOpts, subType: activeSub });
+          break;
+        case 'outstanding':
+          result = await getOutstandingReportData({ ...filterOpts, subType: activeSub });
+          break;
+        case 'inventory':
+          result = await getInventoryReportData({ ...filterOpts, subType: activeSub });
+          break;
+        case 'profitability':
+          result = await getProfitabilityReportData({ ...filterOpts, subType: activeSub });
+          break;
+        case 'tax':
+          result = await getTaxReportData({ ...filterOpts, subType: activeSub });
+          break;
+        default:
+          result = await getExecutiveOverview(filterOpts);
+          break;
+      }
+      setReportData(result);
+    } catch (err) {
+      console.error('Failed to load report data:', err);
+      setReportData(null);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [activeCategory, activeSub, selectedPartyId, preset, dateFrom, dateTo, searchQuery]);
+
+  useEffect(() => {
+    fetchReportData();
+  }, [fetchReportData]);
+
+  // ── Universal Export Handlers ──────────────────────────────────────────
+  const getExportHeadersAndRows = () => {
+    if (!reportData) return { headers: [], rows: [] };
+
+    if (reportData.rows && Array.isArray(reportData.rows)) {
+      const sampleRow = reportData.rows[0];
+      if (!sampleRow) return { headers: [], rows: [] };
+      const headers = Object.keys(sampleRow)
+        .filter(k => k !== 'id')
+        .map(key => ({
+          key,
+          label: key
+            .replace(/([A-Z])/g, ' $1')
+            .replace(/^./, str => str.toUpperCase()),
+        }));
+      return { headers, rows: reportData.rows };
+    }
+
+    if (activeCategory === 'overview' && reportData.kpi) {
+      const kpiEntries = Object.entries(reportData.kpi).map(([key, val]) => ({
+        Metric: key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase()),
+        Value: val,
+      }));
+      return {
+        headers: [{ key: 'Metric', label: 'Metric' }, { key: 'Value', label: 'Value' }],
+        rows: kpiEntries,
+      };
+    }
+
+    return { headers: [], rows: [] };
+  };
+
+  const handleExportCsv = () => {
+    const { headers, rows } = getExportHeadersAndRows();
+    const filename = `${activeCategory}_${activeSub || 'report'}`;
+    exportReportToCsv(filename, headers, rows);
+  };
+
+  const handleExportExcel = () => {
+    const { headers, rows } = getExportHeadersAndRows();
+    const filename = `${activeCategory}_${activeSub || 'report'}`;
+    exportReportToExcel(filename, activeCategory.toUpperCase(), headers, rows);
+  };
 
   const handlePrint = () => {
     window.print();
   };
 
-  const handleExportCSV = () => {
-    if (!reportData) return;
-    const rows = [
-      ['Metric', 'Amount (INR)'],
-      ['Gross Sales Revenue', reportData.grossSales],
-      ['Cost of Materials Inward (Purchases)', reportData.cogsPurchases],
-      ['Gross Profit', reportData.grossProfit],
-      ['Gross Margin %', `${reportData.grossMarginPct}%`],
-      ['Operating Expenses', reportData.operatingExpenses],
-      ['Net Operating Profit', reportData.netProfit],
-      ['Net Margin %', `${reportData.netMarginPct}%`],
-      ['Yard Stock Valuation', reportData.totalStockValuation],
-    ];
-
-    const csvContent = rows.map(r => r.join(',')).join('\n');
-    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-    const url = URL.createObjectURL(blob);
-    const link = document.createElement('a');
-    link.setAttribute('href', url);
-    link.setAttribute('download', `erp_financial_report_${new Date().toISOString().slice(0, 10)}.csv`);
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
-
-  if (isLoading || !reportData) {
-    return (
-      <ERPLayout pageTitle="Reports" showBackButton={true} backTo="/dashboard">
-        <div style={{ padding: '60px 0', textAlign: 'center', color: '#64748b' }}>
-          Generating executive business intelligence reports…
-        </div>
-      </ERPLayout>
-    );
-  }
+  // Active Category Meta
+  const currentCategoryObj = REPORT_CATEGORIES.find(c => c.id === activeCategory) || REPORT_CATEGORIES[0];
 
   return (
-    <ERPLayout pageTitle="Reports" showBackButton={true} backTo="/dashboard">
+    <ERPLayout>
       <div className={styles.container}>
-        {/* ── Page Header ────────────────────────────── */}
+        {/* ── Print Only Header ──────────────────────────────────────── */}
+        <div className={styles.printHeader}>
+          <h1 className={styles.printTitle}>Forbusyness — {currentCategoryObj.label} Report</h1>
+          <p className={styles.printMeta}>
+            Generated on: {new Date().toLocaleString('en-IN')} | Period: {preset.toUpperCase()}
+            {dateFrom ? ` (${dateFrom} to ${dateTo || 'Present'})` : ''}
+          </p>
+        </div>
+
+        {/* ── Page Header ────────────────────────────────────────────── */}
         <div className={styles.headerRow}>
-          <div>
+          <div className={styles.headerLeft}>
             <div className={styles.breadcrumbs}>
-              <span>ERP</span> / <span className={styles.breadcrumbActive}>Executive Analytics & Reports</span>
+              <span>ERP</span>
+              <span>/</span>
+              <span>Reports</span>
+              <span>/</span>
+              <span className={styles.breadcrumbActive}>{currentCategoryObj.label}</span>
             </div>
             <div className={styles.titleWrapper}>
               <h1 className={styles.title}>Reports & Business Intelligence</h1>
-              <span className={styles.titleBadge}>Live Analytics</span>
+              <span className={styles.titleBadge}>Live Data</span>
             </div>
             <p className={styles.subtitle}>
-              Profit & loss statements, operational trend curves, steel inventory audits, and liquidity analysis
+              Comprehensive reports across sales, purchases, stock, customer ledgers, and business profitability
             </p>
           </div>
 
           <div className={styles.headerActions}>
             <button
               type="button"
-              className={styles.btnSecondary}
+              className={styles.btnBack}
               onClick={() => navigate('/dashboard')}
-              title="Go back to Dashboard"
+              title="Return to Dashboard"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
-                fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="19" y1="12" x2="5" y2="12"/>
-                <polyline points="12 19 5 12 12 5"/>
-              </svg>
-              Go Back
-            </button>
-
-            <select
-              className={styles.periodSelect}
-              value={period}
-              onChange={(e) => setPeriod(e.target.value)}
-            >
-              <option value="Month">Current Month (Oct 2026)</option>
-              <option value="Quarter">Current Quarter (Q3 2026)</option>
-              <option value="Year">Financial Year (FY 2026-27)</option>
-            </select>
-
-            <button
-              type="button"
-              className={styles.btnSecondary}
-              onClick={handleExportCSV}
-              title="Download consolidated executive report CSV"
-            >
-              📥 Export CSV
-            </button>
-
-            <button
-              type="button"
-              className={styles.btnSecondary}
-              onClick={handlePrint}
-              title="Print report"
-            >
-              🖨️ Print Report
+              ← Back to Dashboard
             </button>
           </div>
         </div>
 
-        {/* ── 4 Top KPI Cards ────────────────────────── */}
-        <div className={styles.kpiGrid}>
-          {/* Gross Turnover */}
-          <div className={`${styles.kpiCard} ${styles.cardPurple} hover-lift`}>
-            <div className={styles.kpiTop}>
-              <span className={styles.kpiTitle}>Gross Turnover</span>
-              <div className={styles.kpiIconWrapper} style={{ background: '#f5f3ff', color: '#6d28d9' }}>
-                📊
-              </div>
-            </div>
-            <div className={styles.kpiValue} style={{ color: '#6d28d9' }}>
-              {fmtINR(reportData.grossSales)}
-            </div>
-            <div className={styles.kpiBottom}>
-              <span>Total invoices cleared</span>
-              <span className={styles.kpiTrendBadge} style={{ background: '#ede9fe', color: '#6d28d9' }}>
-                Revenue Topline
-              </span>
-            </div>
-          </div>
+        {/* ── 9 Category Navigation Bar ──────────────────────────────── */}
+        <ReportsNavigation
+          activeCategory={activeCategory}
+          activeSub={activeSub}
+          onSelectCategory={handleSelectCategory}
+          onSelectSub={handleSelectSub}
+        />
 
-          {/* Gross Margin */}
-          <div className={`${styles.kpiCard} ${styles.cardEmerald} hover-lift`}>
-            <div className={styles.kpiTop}>
-              <span className={styles.kpiTitle}>Gross Margin</span>
-              <div className={styles.kpiIconWrapper} style={{ background: '#ecfdf5', color: '#059669' }}>
-                📈
-              </div>
-            </div>
-            <div className={styles.kpiValue} style={{ color: '#059669' }}>
-              {fmtINR(reportData.grossProfit)}
-            </div>
-            <div className={styles.kpiBottom}>
-              <span>{reportData.grossMarginPct}% gross margin</span>
-              <span className={styles.kpiTrendBadge} style={{ background: '#dcfce7', color: '#15803d' }}>
-                Healthy Health
-              </span>
-            </div>
-          </div>
+        {/* ── Universal Date & Action Filter Bar ─────────────────────── */}
+        <ReportFilterBar
+          preset={preset}
+          onSelectPreset={setPreset}
+          dateFrom={dateFrom}
+          dateTo={dateTo}
+          onChangeDateFrom={setDateFrom}
+          onChangeDateTo={setDateTo}
+          search={searchQuery}
+          onChangeSearch={setSearchQuery}
+          searchPlaceholder={`Search ${currentCategoryObj.label.toLowerCase()}...`}
+          onExportCsv={handleExportCsv}
+          onExportExcel={handleExportExcel}
+          onPrint={handlePrint}
+          onRefresh={fetchReportData}
+          isLoading={isLoading}
+        />
 
-          {/* Net Operating Profit */}
-          <div className={`${styles.kpiCard} ${styles.cardBlue} hover-lift`}>
-            <div className={styles.kpiTop}>
-              <span className={styles.kpiTitle}>Net Operating Profit</span>
-              <div className={styles.kpiIconWrapper} style={{ background: '#f5f3ff', color: '#6d28d9' }}>
-                📈
-              </div>
+        {/* ── Main Report Content Area ───────────────────────────────── */}
+        <div className={styles.contentArea}>
+          {isLoading ? (
+            <div className={styles.loadingContainer}>
+              <div className={styles.spinner} />
+              <p>Loading {currentCategoryObj.label} report data...</p>
             </div>
-            <div className={styles.kpiValue} style={{ color: '#6d28d9' }}>
-              {fmtINR(reportData.netProfit)}
-            </div>
-            <div className={styles.kpiBottom}>
-              <span>{reportData.netMarginPct}% net margin</span>
-              <span className={styles.kpiTrendBadge} style={{ background: '#ede9fe', color: '#6d28d9' }}>
-                After Overheads
-              </span>
-            </div>
-          </div>
-
-          {/* Stock Valuation */}
-          <div className={`${styles.kpiCard} ${styles.cardAmber} hover-lift`}>
-            <div className={styles.kpiTop}>
-              <span className={styles.kpiTitle}>Stock Valuation</span>
-              <div className={styles.kpiIconWrapper} style={{ background: '#fffbeb', color: '#d97706' }}>
-                📦
-              </div>
-            </div>
-            <div className={styles.kpiValue} style={{ color: '#d97706' }}>
-              {fmtINR(reportData.totalStockValuation)}
-            </div>
-            <div className={styles.kpiBottom}>
-              <span>Yard physical inventory</span>
-              <span className={styles.kpiTrendBadge} style={{ background: '#fef3c7', color: '#b45309' }}>
-                Audited Asset
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* ── Report Selector Tabs ───────────────────── */}
-        <div className={styles.tabsBar}>
-          <button
-            type="button"
-            className={`${styles.navTab} ${activeTab === 'pl' ? styles.navTabActive : ''}`}
-            onClick={() => setActiveTab('pl')}
-          >
-            📊 Profit & Loss (P&L)
-          </button>
-          <button
-            type="button"
-            className={`${styles.navTab} ${activeTab === 'trend' ? styles.navTabActive : ''}`}
-            onClick={() => setActiveTab('trend')}
-          >
-            📈 Sales vs Purchase Trend
-          </button>
-          <button
-            type="button"
-            className={`${styles.navTab} ${activeTab === 'stock' ? styles.navTabActive : ''}`}
-            onClick={() => setActiveTab('stock')}
-          >
-            📦 Inventory Valuation
-          </button>
-          <button
-            type="button"
-            className={`${styles.navTab} ${activeTab === 'ageing' ? styles.navTabActive : ''}`}
-            onClick={() => setActiveTab('ageing')}
-          >
-            ⏳ Ageing Analysis
-          </button>
-        </div>
-
-        {/* ── Tab 1: Profit & Loss Statement ─────────── */}
-        {activeTab === 'pl' && (
-          <div className={`${styles.reportCard} animate-fade-in`}>
-            <div className={styles.cardHeader}>
-              <div>
-                <h2 className={styles.cardTitle}>Statement of Profit & Loss</h2>
-                <p className={styles.cardSubtitle}>Operating income, cost of goods sold, and net business profitability</p>
-              </div>
-            </div>
-
-            <div className={styles.plTable}>
-              <div className={`${styles.plRow} ${styles.plRowHeader}`}>
-                <span>Particulars</span>
-                <span>Amount (₹)</span>
-              </div>
-              <div className={styles.plRow}>
-                <span>Revenue from Sales of Finished Steel</span>
-                <span className={styles.mono} style={{ fontWeight: 600 }}>{fmtINR(reportData.grossSales)}</span>
-              </div>
-              <div className={styles.plRow}>
-                <span style={{ color: '#e11d48' }}>Less: Cost of Raw Steel Inward (Purchases)</span>
-                <span className={styles.mono} style={{ color: '#e11d48', fontWeight: 600 }}>- {fmtINR(reportData.cogsPurchases)}</span>
-              </div>
-              <div className={`${styles.plRow} ${styles.plRowHighlight}`}>
-                <span>Gross Profit (Trading Margin: {reportData.grossMarginPct}%)</span>
-                <span className={styles.mono}>{fmtINR(reportData.grossProfit)}</span>
-              </div>
-              <div className={styles.plRow}>
-                <span style={{ color: '#64748b' }}>Less: Operational Overhead & Yard Expenses</span>
-                <span className={styles.mono} style={{ color: '#64748b' }}>- {fmtINR(reportData.operatingExpenses)}</span>
-              </div>
-              <div className={`${styles.plRow} ${styles.plRowSuccess}`}>
-                <span>Net Operating Profit ({reportData.netMarginPct}% Net Margin)</span>
-                <span className={styles.mono}>{fmtINR(reportData.netProfit)}</span>
-              </div>
-            </div>
-          </div>
-        )}
-
-
-
-        {/* ── Tab 3: Sales vs Purchase Trend ─────────── */}
-        {activeTab === 'trend' && (
-          <div className={`${styles.reportCard} animate-fade-in`}>
-            <div className={styles.cardHeader}>
-              <div>
-                <h2 className={styles.cardTitle}>Sales Revenue vs Procurement Trend</h2>
-                <p className={styles.cardSubtitle}>Monthly commercial cashflow curve and profitability divergence</p>
-              </div>
-            </div>
-
-            {reportData.monthlyTrend && reportData.monthlyTrend.length > 0 ? (
-              <div style={{ width: '100%', height: 360, marginTop: '16px' }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={reportData.monthlyTrend} margin={{ top: 10, right: 30, left: 20, bottom: 0 }}>
-                    <defs>
-                      <linearGradient id="colorSales" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#7c3aed" stopOpacity={0.8}/>
-                        <stop offset="95%" stopColor="#7c3aed" stopOpacity={0}/>
-                      </linearGradient>
-                      <linearGradient id="colorPurchases" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#0284c7" stopOpacity={0.8}/>
-                        <stop offset="95%" stopColor="#0284c7" stopOpacity={0}/>
-                      </linearGradient>
-                    </defs>
-                    <XAxis dataKey="month" stroke="#64748b" fontSize={12} />
-                    <YAxis stroke="#64748b" fontSize={12} tickFormatter={(val) => `₹${val / 100000}L`} />
-                    <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                    <Tooltip formatter={(value) => [fmtINR(value)]} />
-                    <Legend />
-                    <Area type="monotone" dataKey="sales" name="Sales Revenue" stroke="#7c3aed" fillOpacity={1} fill="url(#colorSales)" strokeWidth={2} />
-                    <Area type="monotone" dataKey="purchases" name="Procurement Spend" stroke="#0284c7" fillOpacity={1} fill="url(#colorPurchases)" strokeWidth={2} />
-                  </AreaChart>
-                </ResponsiveContainer>
-              </div>
-            ) : (
-              <div style={{ textAlign: 'center', padding: '60px 0', color: '#94a3b8', fontSize: '0.875rem' }}>
-                No sales or purchase transactions recorded yet.
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* ── Tab 4: Stock Valuation ─────────────────── */}
-        {activeTab === 'stock' && (
-          <div className={`${styles.reportCard} animate-fade-in`}>
-            <div className={styles.cardHeader}>
-              <div>
-                <h2 className={styles.cardTitle}>Steel Material Stock Valuation by Category</h2>
-                <p className={styles.cardSubtitle}>Category capital allocation and yard weight breakdown</p>
-              </div>
-            </div>
-
-            {reportData.categoryBreakdown && reportData.categoryBreakdown.length > 0 ? (
-              <div style={{ width: '100%', height: 320, marginTop: '16px' }}>
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={reportData.categoryBreakdown} margin={{ top: 20, right: 30, left: 20, bottom: 5 }}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#f1f5f9" />
-                    <XAxis dataKey="name" stroke="#64748b" fontSize={12} />
-                    <YAxis stroke="#64748b" fontSize={12} tickFormatter={(val) => `₹${val / 100000}L`} />
-                    <Tooltip formatter={(value) => [fmtINR(value), 'Asset Valuation']} />
-                    <Bar dataKey="value" name="Valuation (₹)" fill="#7c3aed" radius={[6, 6, 0, 0]} />
-                  </BarChart>
-                </ResponsiveContainer>
-              </div>
-            ) : (
-              <div style={{ textAlign: 'center', padding: '60px 0', color: '#94a3b8', fontSize: '0.875rem' }}>
-                No inventory stock recorded yet.
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* ── Tab 5: Ageing Analysis ─────────────────── */}
-        {activeTab === 'ageing' && (
-          <div className={`${styles.reportCard} animate-fade-in`}>
-            <div className={styles.cardHeader}>
-              <div>
-                <h2 className={styles.cardTitle}>Trade Ageing Analysis (Receivables & Payables Buckets)</h2>
-                <p className={styles.cardSubtitle}>Credit exposure risk categorized by overdue windows</p>
-              </div>
-            </div>
-
-            {/* Receivables Buckets */}
-            <div style={{ marginBottom: '28px' }}>
-              <h3 style={{ fontSize: '0.9375rem', fontWeight: 700, color: '#0f172a', marginBottom: '12px' }}>
-                Customer Receivables (Debtors Ageing)
-              </h3>
-              {reportData.ageingData?.receivables?.length > 0 ? (
-                <div className={styles.ageingGrid}>
-                  {reportData.ageingData.receivables.map(b => (
-                    <div key={b.bucket} className={styles.ageingCard} style={{ borderTop: `3px solid ${b.color}` }}>
-                      <div className={styles.ageingBucket}>{b.bucket}</div>
-                      <div className={styles.ageingAmount} style={{ color: b.color }}>{fmtINR(b.amount)}</div>
-                      <div className={styles.ageingCount}>{b.count} invoices pending</div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p style={{ color: '#94a3b8', fontSize: '0.875rem' }}>No customer invoices overdue.</p>
+          ) : (
+            <>
+              {activeCategory === 'overview' && (
+                <ReportsOverviewSection
+                  data={reportData}
+                  onNavigateCategory={handleNavigate}
+                />
               )}
-            </div>
 
-            {/* Payables Buckets */}
-            <div>
-              <h3 style={{ fontSize: '0.9375rem', fontWeight: 700, color: '#0f172a', marginBottom: '12px' }}>
-                Mill Payables (Creditors Ageing)
-              </h3>
-              {reportData.ageingData?.payables?.length > 0 ? (
-                <div className={styles.ageingGrid}>
-                  {reportData.ageingData.payables.map(b => (
-                    <div key={b.bucket} className={styles.ageingCard} style={{ borderTop: `3px solid ${b.color}` }}>
-                      <div className={styles.ageingBucket}>{b.bucket}</div>
-                      <div className={styles.ageingAmount} style={{ color: b.color }}>{fmtINR(b.amount)}</div>
-                      <div className={styles.ageingCount}>{b.count} supplier bills due</div>
-                    </div>
-                  ))}
-                </div>
-              ) : (
-                <p style={{ color: '#94a3b8', fontSize: '0.875rem' }}>No supplier payables overdue.</p>
+              {activeCategory === 'sales' && (
+                <SalesReportsSection
+                  data={reportData}
+                  subType={activeSub}
+                />
               )}
-            </div>
-          </div>
-        )}
+
+              {activeCategory === 'purchases' && (
+                <PurchaseReportsSection
+                  data={reportData}
+                  subType={activeSub}
+                />
+              )}
+
+              {activeCategory === 'ledgers' && (
+                <LedgerReportsSection
+                  data={reportData}
+                  subType={activeSub}
+                  selectedPartyId={selectedPartyId}
+                  onSelectPartyId={setSelectedPartyId}
+                />
+              )}
+
+              {activeCategory === 'financials' && (
+                <FinancialReportsSection
+                  data={reportData}
+                  subType={activeSub}
+                />
+              )}
+
+              {activeCategory === 'outstanding' && (
+                <OutstandingReportsSection
+                  data={reportData}
+                  subType={activeSub}
+                  onNavigateToLedger={handleNavigateToLedger}
+                />
+              )}
+
+              {activeCategory === 'inventory' && (
+                <InventoryReportsSection
+                  data={reportData}
+                  subType={activeSub}
+                />
+              )}
+
+              {activeCategory === 'profitability' && (
+                <ProfitabilityReportsSection
+                  data={reportData}
+                  subType={activeSub}
+                />
+              )}
+
+              {activeCategory === 'tax' && (
+                <TaxReportsSection
+                  data={reportData}
+                  subType={activeSub}
+                />
+              )}
+            </>
+          )}
+        </div>
       </div>
     </ERPLayout>
   );

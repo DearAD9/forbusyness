@@ -1,0 +1,195 @@
+/* FinancialReportsSection.module.css */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.statementCard {
+  background: var(--color-surface, #ffffff);
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 12px;
+  padding: 20px 24px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.statementHeader {
+  margin-bottom: 18px;
+  border-bottom: 1px solid var(--color-border, #e2e8f0);
+  padding-bottom: 12px;
+}
+
+.statementTitle {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--color-text, #0f172a);
+  margin: 0;
+}
+
+.statementSubtitle {
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary, #64748b);
+  margin: 4px 0 0;
+}
+
+.statementTable {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.statementTable th {
+  text-align: left;
+  padding: 10px 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #64748b;
+  border-bottom: 2px solid var(--color-border, #e2e8f0);
+  background: #f8fafc;
+}
+
+.statementTable td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #f1f5f9;
+  color: var(--color-text, #334155);
+}
+
+.sectionHeaderRow td {
+  padding-top: 18px;
+  padding-bottom: 6px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #475569;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.indent1 {
+  padding-left: 24px !important;
+}
+
+.deductionRow td {
+  color: #e11d48;
+}
+
+.subtotalRow td {
+  font-weight: 600;
+  border-top: 1px solid #cbd5e1;
+  border-bottom: 1px solid #cbd5e1;
+  background: #f8fafc;
+}
+
+.grossProfitRow td {
+  padding: 14px 12px;
+  background: #f0fdf4;
+  border-top: 2px solid #86efac;
+  border-bottom: 2px solid #86efac;
+}
+
+.grossProfitVal {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: #15803d;
+}
+
+.marginTag {
+  display: inline-block;
+  margin-left: 10px;
+  padding: 2px 8px;
+  background: #dcfce7;
+  color: #166534;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.netProfitRow td {
+  padding: 16px 12px;
+  background: #eff6ff;
+  border-top: 2px solid #93c5fd;
+  border-bottom: 2px solid #93c5fd;
+}
+
+.netProfitVal {
+  font-size: 1.25rem;
+  font-weight: 800;
+  color: #1d4ed8;
+}
+
+.netMarginTag {
+  display: inline-block;
+  margin-left: 10px;
+  padding: 2px 8px;
+  background: #dbeafe;
+  color: #1e40af;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.totalRow td {
+  padding: 14px 12px;
+  background: #f8fafc;
+  border-top: 2px solid #cbd5e1;
+  border-bottom: 2px solid #cbd5e1;
+  font-size: 0.9375rem;
+}
+
+.cellCode {
+  font-family: var(--font-mono, monospace);
+  font-weight: 600;
+  color: #2563eb;
+}
+
+.cellBold {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.textRight {
+  text-align: right;
+}
+
+.textDr {
+  color: #2563eb;
+  font-weight: 600;
+}
+
+.textCr {
+  color: #059669;
+  font-weight: 600;
+}
+
+.flexBetween {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.statusBadge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.statusBalanced {
+  background: #ecfdf5;
+  color: #059669;
+}
+
+.statusUnbalanced {
+  background: #fff1f2;
+  color: #e11d48;
+}
+
+.balanceSheetGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(440px, 1fr));
+  gap: 20px;
+}

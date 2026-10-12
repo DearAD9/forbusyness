@@ -1,0 +1,158 @@
+/* InventoryReportsSection.module.css */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.summaryBar {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+  background: var(--color-surface, #ffffff);
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 12px;
+  padding: 16px 20px;
+  flex-wrap: wrap;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.summaryItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.summaryLabel {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-secondary, #64748b);
+}
+
+.summaryValue {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--color-text, #0f172a);
+}
+
+.tableCard {
+  background: var(--color-surface, #ffffff);
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+
+.table th {
+  text-align: left;
+  padding: 10px 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #64748b;
+  border-bottom: 1px solid var(--color-border, #e2e8f0);
+  background: #f8fafc;
+}
+
+.table td {
+  padding: 11px 12px;
+  border-bottom: 1px solid #f1f5f9;
+  color: var(--color-text, #334155);
+}
+
+.table tbody tr:hover {
+  background: #f8fafc;
+}
+
+.cellCode {
+  font-family: var(--font-mono, monospace);
+  font-weight: 600;
+  color: #2563eb;
+}
+
+.cellBold {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.textRight {
+  text-align: right;
+}
+
+.textCenter {
+  text-align: center;
+}
+
+.textSuccess {
+  color: #059669;
+}
+
+.textDanger {
+  color: #e11d48;
+}
+
+.textWarning {
+  color: #d97706;
+}
+
+.emptyCell {
+  text-align: center;
+  color: #94a3b8;
+  padding: 32px 12px;
+}
+
+/* Status Badges */
+.statusBadge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.status_instock {
+  background: #ecfdf5;
+  color: #059669;
+}
+
+.status_lowstock {
+  background: #fffbeb;
+  color: #d97706;
+}
+
+.status_outofstock {
+  background: #fff1f2;
+  color: #e11d48;
+}
+
+.movementBadge {
+  display: inline-block;
+  padding: 3px 8px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+}
+
+.movementIn {
+  background: #eff6ff;
+  color: #2563eb;
+}
+
+.movementOut {
+  background: #fdf2f8;
+  color: #db2777;
+}

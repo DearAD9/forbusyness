@@ -22,6 +22,7 @@
 import { BrowserRouter, Routes, Route, Navigate, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { CategoryProvider } from './context/CategoryContext';
 import ProtectedRoute from './router/ProtectedRoute';
 import LoginPage from './pages/LoginPage';
 import DashboardPage from './pages/DashboardPage';
@@ -82,6 +83,7 @@ export default function App() {
   return (
     <BrowserRouter>
       <AuthProvider>
+        <CategoryProvider>
         <Routes>
           {/* Public */}
           <Route path="/login" element={<AuthAwareLoginRoute />} />
@@ -270,6 +272,7 @@ export default function App() {
           {/* Catch-all → dashboard (ProtectedRoute will gate it) */}
           <Route path="*" element={<Navigate to="/dashboard" replace />} />
         </Routes>
+        </CategoryProvider>
       </AuthProvider>
     </BrowserRouter>
   );

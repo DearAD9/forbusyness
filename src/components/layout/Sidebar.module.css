@@ -120,6 +120,11 @@
   width: 100%;
 }
 
+/* Makes the Sales button row push chevron to the right */
+.salesTrigger {
+  justify-content: space-between;
+}
+
 .navItemLeft {
   display: flex;
   align-items: center;
@@ -131,7 +136,7 @@
   align-items: center;
   color: #6b7280;
   transition: transform 150ms ease;
-  margin-left: auto;
+  flex-shrink: 0;
 }
 
 .subnavChevron.open {
@@ -141,12 +146,24 @@
 
 .subnavList {
   list-style: none;
-  margin: 2px 0 6px 18px;
+  margin: 0 0 4px 18px;
   padding: 2px 0 2px 10px;
   border-left: 1.5px solid rgba(255,255,255,0.1);
   display: flex;
   flex-direction: column;
   gap: 2px;
+  /* Accordion: collapsed by default */
+  max-height: 0;
+  overflow: hidden;
+  transition: max-height 220ms cubic-bezier(0.16, 1, 0.3, 1),
+              opacity 180ms ease;
+  opacity: 0;
+}
+
+.subnavListOpen {
+  /* 3 items × ~30px each + padding */
+  max-height: 200px;
+  opacity: 1;
 }
 
 .subnavItem {

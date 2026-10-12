@@ -6,8 +6,7 @@
  * Sales section contains:
  *   ├── New Invoice (/sales/invoices/new)
  *   ├── Sales Invoices (/sales/invoices)
- *   ├── Sales Return (/sales/returns)
- *   └── Sales Reports (/sales/reports)
+ *   └── Sales Return (/sales/returns)
  *
  * Strictly NO Payment Receipt in Sales.
  * Strictly NO Fabrication Work.
@@ -27,7 +26,6 @@ const SALES_SUBITEMS = [
   { to: '/sales/invoices/new', label: 'New Invoice' },
   { to: '/sales/invoices',     label: 'Sales Invoices' },
   { to: '/sales/returns',      label: 'Sales Return' },
-  { to: '/sales/reports',      label: 'Sales Reports' },
 ];
 
 const OTHER_ITEMS = [
@@ -108,7 +106,7 @@ export default function Sidebar({ isOpen, onToggle }) {
           <li className={styles.navItemWithSub}>
             <button
               type="button"
-              className={`${styles.navItem} ${isSalesActive ? styles.active : ''}`}
+              className={`${styles.navItem} ${styles.salesTrigger} ${isSalesActive ? styles.active : ''}`}
               onClick={handleSalesClick}
               title={!isOpen ? 'Sales' : undefined}
               aria-expanded={salesExpanded}
@@ -117,16 +115,14 @@ export default function Sidebar({ isOpen, onToggle }) {
                 <span className={styles.navIcon}><IconSales /></span>
                 {isOpen && <span className={styles.navLabel}>Sales</span>}
               </div>
-              {isOpen && (
-                <span className={`${styles.subnavChevron} ${salesExpanded ? styles.open : ''}`}>
-                  <IconChevronSmall />
-                </span>
-              )}
             </button>
 
-            {/* Sub-menu when open and expanded */}
-            {isOpen && salesExpanded && (
-              <ul className={styles.subnavList} aria-label="Sales sub-menu">
+            {/* Sub-menu: smooth accordion, always rendered for CSS transition */}
+            {isOpen && (
+              <ul
+                className={`${styles.subnavList} ${salesExpanded ? styles.subnavListOpen : ''}`}
+                aria-label="Sales sub-menu"
+              >
                 {SALES_SUBITEMS.map(({ to, label }) => (
                   <li key={to}>
                     <NavLink
@@ -278,11 +274,3 @@ function IconChevronRight() {
   );
 }
 
-function IconChevronSmall() {
-  return (
-    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24"
-      fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
-      <polyline points="9 18 15 12 9 6"/>
-    </svg>
-  );
-}

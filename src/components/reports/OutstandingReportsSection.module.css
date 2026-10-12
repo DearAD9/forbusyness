@@ -1,0 +1,183 @@
+/* OutstandingReportsSection.module.css */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.agingGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 14px;
+}
+
+.agingCard {
+  background: var(--color-surface, #ffffff);
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.agingTotal {
+  border-left: 4px solid #2563eb;
+}
+
+.agingCurrent {
+  border-left: 4px solid #059669;
+}
+
+.aging30To60 {
+  border-left: 4px solid #d97706;
+}
+
+.aging60To90 {
+  border-left: 4px solid #ea580c;
+}
+
+.agingAbove90 {
+  border-left: 4px solid #e11d48;
+}
+
+.agingLabel {
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--color-text-secondary, #64748b);
+}
+
+.agingValue {
+  font-size: 1.375rem;
+  font-weight: 700;
+  color: var(--color-text, #0f172a);
+}
+
+.agingMeta {
+  font-size: 0.75rem;
+  color: #64748b;
+}
+
+.textOverdue {
+  color: #e11d48;
+  font-weight: 700;
+}
+
+.textAmber {
+  color: #d97706;
+  font-weight: 600;
+}
+
+.textOrange {
+  color: #ea580c;
+  font-weight: 600;
+}
+
+.tableCard {
+  background: var(--color-surface, #ffffff);
+  border: 1px solid var(--color-border, #e2e8f0);
+  border-radius: 12px;
+  padding: 18px 22px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+}
+
+.tableHeader {
+  margin-bottom: 16px;
+}
+
+.tableTitle {
+  font-size: 1.0625rem;
+  font-weight: 700;
+  color: var(--color-text, #0f172a);
+  margin: 0;
+}
+
+.tableSubtitle {
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary, #64748b);
+  margin: 4px 0 0;
+}
+
+.tableWrapper {
+  overflow-x: auto;
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.8125rem;
+}
+
+.table th {
+  text-align: left;
+  padding: 10px 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #64748b;
+  border-bottom: 1px solid var(--color-border, #e2e8f0);
+  background: #f8fafc;
+}
+
+.table td {
+  padding: 11px 12px;
+  border-bottom: 1px solid #f1f5f9;
+  color: var(--color-text, #334155);
+}
+
+.table tbody tr:hover {
+  background: #f8fafc;
+}
+
+.cellBold {
+  font-weight: 600;
+  color: #0f172a;
+}
+
+.cellTotalDue {
+  font-weight: 700;
+  color: #e11d48;
+}
+
+.textRight {
+  text-align: right;
+}
+
+.textCenter {
+  text-align: center;
+}
+
+.emptyCell {
+  text-align: center;
+  color: #94a3b8;
+  padding: 36px 12px;
+}
+
+.ledgerBtn {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1d4ed8;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.ledgerBtn:hover {
+  background: #2563eb;
+  color: #ffffff;
+  border-color: #2563eb;
+}
+
+@media print {
+  .ledgerBtn {
+    display: none !important;
+  }
+}

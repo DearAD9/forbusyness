@@ -21,11 +21,14 @@ import {
   STANDARD_HSN_CODES,
 } from '../services/productService';
 import styles from './ProductFormPage.module.css';
+import { useCategories } from '../context/CategoryContext';
+
 
 const UNITS = ['KG', 'MT', 'PCS', 'MTR', 'BUNDLE', 'FEET'];
 
 export default function ProductFormPage() {
   const navigate = useNavigate();
+  const { categories, addCategory } = useCategories();
   const { id } = useParams();
   const isEdit = Boolean(id);
 
@@ -33,6 +36,37 @@ export default function ProductFormPage() {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [successMsg, setSuccessMsg] = useState('');
   const [errorMsg, setErrorMsg] = useState('');
+
+  // Category Creation Modal State
+  const [isCategoryModalOpen, setIsCategoryModalOpen] = useState(false);
+  const [newCategoryInput, setNewCategoryInput] = useState('');
+  const [categoryAddError, setCategoryAddError] = useState('');
+
+  const handleOpenCategoryModal = () => {
+    setNewCategoryInput('');
+    setCategoryAddError('');
+    setIsCategoryModalOpen(true);
+  };
+
+  const handleCloseCategoryModal = () => {
+    setIsCategoryModalOpen(false);
+    setNewCategoryInput('');
+    setCategoryAddError('');
+  };
+
+  const handleSaveCategory = (e) => {
+    e?.preventDefault();
+    const trimmed = newCategoryInput.trim();
+    if (!trimmed) {
+      setCategoryAddError('Category name cannot be empty.');
+      return;
+    }
+    if (!categories.includes(trimmed)) {
+      addCategory(trimmed);
+    }
+    handleChange('category', trimmed);
+    handleCloseCategoryModal();
+  };
 
   // Form State
   const [form, setForm] = useState({
@@ -137,7 +171,6 @@ export default function ProductFormPage() {
     if (!form.name.trim()) errs.name = 'Product name is required';
     if (!form.category) errs.category = 'Category is required';
     if (!form.unit) errs.unit = 'Unit is required';
-    if (!form.hsn.trim()) errs.hsn = 'HSN Code is required';
 
     if (form.purchaseRate && Number(form.purchaseRate) < 0) {
       errs.purchaseRate = 'Purchase rate cannot be negative';
@@ -208,7 +241,7 @@ export default function ProductFormPage() {
   }
 
   return (
-    <ERPLayout pageTitle={isEdit ? 'Edit Product' : 'New Product'} showBackButton={true} backTo="/products">
+    <ERPLayout pageTitle={isEdit ? 'Edit Product' : 'New Product'}>
       <div className={styles.container}>
         {/* ── Page Header & Breadcrumbs ───────────────────────── */}
         <div className={styles.headerRow}>
@@ -223,21 +256,7 @@ export default function ProductFormPage() {
               {form.code && <span className={styles.codeBadge}>{form.code}</span>}
             </div>
           </div>
-          <div>
-            <button
-              type="button"
-              className={styles.btnSecondaryLarge}
-              onClick={() => navigate('/products')}
-              style={{ width: 'auto', padding: '0 16px', display: 'inline-flex', alignItems: 'center', gap: '6px' }}
-            >
-              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
-                fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round">
-                <line x1="19" y1="12" x2="5" y2="12"/>
-                <polyline points="12 19 5 12 12 5"/>
-              </svg>
-              Go Back
-            </button>
-          </div>
+
         </div>
 
         {/* ── Notification Banners ──────────────────────────── */}
@@ -265,7 +284,6 @@ export default function ProductFormPage() {
                   </div>
                   <div>
                     <h2 className={styles.sectionTitle}>General Product Information</h2>
-                    <p className={styles.sectionSubtitle}>Core steel product taxonomy, naming, and identification</p>
                   </div>
                 </div>
               </div>
@@ -296,21 +314,38 @@ export default function ProductFormPage() {
                     value={form.code}
                     onChange={(e) => handleChange('code', e.target.value)}
                   />
-                  <span className={styles.helperText}>Unique internal catalog reference code</span>
                 </div>
               </div>
 
               <div className={styles.grid3}>
                 <div className={styles.fieldGroup}>
-                  <label className={styles.label}>
-                    Category <span className={styles.requiredStar}>*</span>
-                  </label>
+                  <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                    <label className={styles.label}>
+                      Category <span className={styles.requiredStar}>*</span>
+                    </label>
+                    <button
+                      type="button"
+                      onClick={handleOpenCategoryModal}
+                      style={{
+                        background: 'none',
+                        border: 'none',
+                        color: '#7c3aed',
+                        fontSize: '0.75rem',
+                        fontWeight: 600,
+                        cursor: 'pointer',
+                        padding: 0,
+                      }}
+                    >
+                      + Add New
+                    </button>
+                  </div>
                   <select
                     className={styles.select}
                     value={form.category}
                     onChange={(e) => handleChange('category', e.target.value)}
                   >
-                    {STEEL_CATEGORIES.map(cat => (
+                    <option value="">Select a category…</option>
+                    {categories.map(cat => (
                       <option key={cat} value={cat}>{cat}</option>
                     ))}
                   </select>
@@ -347,64 +382,14 @@ export default function ProductFormPage() {
               </div>
 
               <div className={styles.fieldGroup}>
-                <label className={styles.label}>Technical Specifications & Dimensions</label>
+                <label className={styles.label}>Description</label>
                 <textarea
                   className={styles.textarea}
                   rows={2}
-                  placeholder="e.g. Outer Diameter 50.8mm, Wall Thickness 2.6mm, Length 6.0m, IS 2062 Grade E250"
+                  placeholder="Enter product description..."
                   value={form.specifications}
                   onChange={(e) => handleChange('specifications', e.target.value)}
                 />
-              </div>
-            </div>
-
-            {/* Section 2: Classification & HSN */}
-            <div className={styles.sectionCard}>
-              <div className={styles.sectionHeader}>
-                <div className={styles.sectionHeaderLeft}>
-                  <div className={styles.sectionIcon} style={{ background: '#e0f2fe', color: '#0369a1' }}>
-                    🏷️
-                  </div>
-                  <div>
-                    <h2 className={styles.sectionTitle}>HSN Classification</h2>
-                    <p className={styles.sectionSubtitle}>Standard commodity code classification for steel products</p>
-                  </div>
-                </div>
-              </div>
-
-              <div className={styles.fieldGroup}>
-                <label className={styles.label}>
-                  HSN Code <span className={styles.requiredStar}>*</span>
-                </label>
-                <input
-                  type="text"
-                  className={`${styles.input} ${errors.hsn ? styles.hasError : ''}`}
-                  placeholder="e.g. 7306, 7216, 7208"
-                  value={form.hsn}
-                  onChange={(e) => handleChange('hsn', e.target.value)}
-                />
-                <div style={{ display: 'flex', gap: '6px', flexWrap: 'wrap', marginTop: '6px' }}>
-                  {STANDARD_HSN_CODES.slice(0, 5).map(item => (
-                    <button
-                      key={item.hsn}
-                      type="button"
-                      onClick={() => handleChange('hsn', item.hsn)}
-                      style={{
-                        fontSize: '0.6875rem',
-                        padding: '3px 8px',
-                        borderRadius: '4px',
-                        border: '1px solid #cbd5e1',
-                        background: form.hsn === item.hsn ? '#ede9fe' : '#f8fafc',
-                        color: form.hsn === item.hsn ? '#6d28d9' : '#475569',
-                        cursor: 'pointer',
-                        fontWeight: 600,
-                      }}
-                    >
-                      {item.hsn} ({item.desc.split(' ')[0]} {item.desc.split(' ')[1] || ''})
-                    </button>
-                  ))}
-                </div>
-                {errors.hsn && <span className={styles.errorText}>{errors.hsn}</span>}
               </div>
             </div>
 
@@ -417,7 +402,6 @@ export default function ProductFormPage() {
                   </div>
                   <div>
                     <h2 className={styles.sectionTitle}>Commercial Rates & Gross Margin</h2>
-                    <p className={styles.sectionSubtitle}>Real-time markup and unit economics</p>
                   </div>
                 </div>
                 {pRate > 0 && sRate > 0 && (
@@ -430,7 +414,7 @@ export default function ProductFormPage() {
               <div className={styles.grid2}>
                 <div className={styles.fieldGroup}>
                   <label className={styles.label}>
-                    Default Purchase Rate (₹ per {form.unit})
+                    Purchase Rate (₹ per {form.unit})
                   </label>
                   <input
                     type="number"
@@ -441,13 +425,13 @@ export default function ProductFormPage() {
                     value={form.purchaseRate}
                     onChange={(e) => handleChange('purchaseRate', e.target.value)}
                   />
-                  <span className={styles.helperText}>Cost per {form.unit} inward from steel mills</span>
+                  <span className={styles.helperText}>Cost per {form.unit} inward from suppliers</span>
                   {errors.purchaseRate && <span className={styles.errorText}>{errors.purchaseRate}</span>}
                 </div>
 
                 <div className={styles.fieldGroup}>
                   <label className={styles.label}>
-                    Default Selling Rate (₹ per {form.unit})
+                    Selling Rate (₹ per {form.unit})
                   </label>
                   <input
                     type="number"
@@ -549,7 +533,7 @@ export default function ProductFormPage() {
             {/* Live Preview Card */}
             <div className={styles.previewBox}>
               <div className={styles.previewHeader}>
-                <span className={styles.previewLabel}>Steel Product Preview</span>
+                <span className={styles.previewLabel}>Product Preview</span>
                 <span className={styles.previewLiveDot}>
                   <span className={styles.liveDotPulse}></span>
                   LIVE
@@ -673,6 +657,127 @@ export default function ProductFormPage() {
           </div>
         </form>
       </div>
+
+      {/* ── Add Category Modal ──────────────────────── */}
+      {isCategoryModalOpen && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            zIndex: 1000,
+            background: 'rgba(15, 23, 42, 0.55)',
+            backdropFilter: 'blur(4px)',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+          }}
+          onClick={handleCloseCategoryModal}
+        >
+          <div
+            style={{
+              background: '#ffffff',
+              borderRadius: '14px',
+              padding: '24px 28px',
+              width: '100%',
+              maxWidth: '420px',
+              boxShadow: '0 20px 60px rgba(0, 0, 0, 0.18)',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '16px' }}>
+              <div>
+                <h2 style={{ margin: 0, fontSize: '1.05rem', fontWeight: 700, color: '#0f172a' }}>Add New Category</h2>
+                <p style={{ margin: '4px 0 0', fontSize: '0.8125rem', color: '#64748b' }}>Create a new product classification</p>
+              </div>
+              <button
+                type="button"
+                onClick={handleCloseCategoryModal}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  fontSize: '1.25rem',
+                  color: '#94a3b8',
+                  cursor: 'pointer',
+                  lineHeight: 1,
+                  padding: '4px',
+                }}
+                title="Close"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Input field */}
+            <form onSubmit={handleSaveCategory}>
+              <div style={{ marginBottom: '12px' }}>
+                <label style={{ display: 'block', fontSize: '0.75rem', fontWeight: 700, color: '#475569', marginBottom: '6px' }}>
+                  Category Name <span style={{ color: '#ef4444' }}>*</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="New category name..."
+                  value={newCategoryInput}
+                  onChange={(e) => {
+                    setNewCategoryInput(e.target.value);
+                    if (categoryAddError) setCategoryAddError('');
+                  }}
+                  autoFocus
+                  style={{
+                    width: '100%',
+                    padding: '9px 12px',
+                    borderRadius: '8px',
+                    border: categoryAddError ? '1.5px solid #ef4444' : '1.5px solid #cbd5e1',
+                    fontSize: '0.875rem',
+                    outline: 'none',
+                    color: '#0f172a',
+                    boxSizing: 'border-box',
+                  }}
+                />
+                {categoryAddError && (
+                  <p style={{ margin: '6px 0 0', fontSize: '0.75rem', color: '#ef4444' }}>{categoryAddError}</p>
+                )}
+              </div>
+
+              {/* Action Buttons */}
+              <div style={{ display: 'flex', justifyContent: 'flex-end', gap: '8px', marginTop: '20px' }}>
+                <button
+                  type="button"
+                  onClick={handleCloseCategoryModal}
+                  style={{
+                    padding: '8px 16px',
+                    borderRadius: '8px',
+                    border: '1.5px solid #e2e8f0',
+                    background: '#ffffff',
+                    color: '#475569',
+                    fontSize: '0.8125rem',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                  }}
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  style={{
+                    padding: '8px 18px',
+                    borderRadius: '8px',
+                    border: 'none',
+                    background: 'linear-gradient(135deg, #7c3aed, #6d28d9)',
+                    color: '#ffffff',
+                    fontSize: '0.8125rem',
+                    fontWeight: 600,
+                    cursor: 'pointer',
+                    boxShadow: '0 2px 4px rgba(124, 58, 237, 0.25)',
+                  }}
+                >
+                  Save
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </ERPLayout>
   );
 }

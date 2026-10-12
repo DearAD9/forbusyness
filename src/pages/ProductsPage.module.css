@@ -18,7 +18,7 @@
 /* ── Page Header ──────────────────────────────────── */
 .headerRow {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 16px;

@@ -3,17 +3,17 @@
  *
  * Professional Steel Product Catalog & Materials Directory.
  * Features:
- * - 4 Summary KPI cards with category counts & margin overview
- * - Segmented category filter pills (MS Pipes, Angles, Flats, Bars, Beams, Hardware)
+ * - 4 Summary KPI cards with dynamic category count
+ * - Dynamic user-managed category system with add/delete modal
  * - Dual view modes: High-density Table & Cards Grid View
  * - Instant CSV export
- * - Optional 1-click "Import Standard Steel Templates" action for rapid catalog setup
  * - Direct navigation to + New Product, Edit, and Product Details
  */
 
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import ERPLayout from '../components/layout/ERPLayout';
+import { useCategories } from '../context/CategoryContext';
 import {
   getProducts,
   getProductSummaryStats,
@@ -60,6 +60,12 @@ function getCategoryCode(cat = '') {
 
 export default function ProductsPage() {
   const navigate = useNavigate();
+
+  // Categories — from global context (persisted to localStorage)
+  const { categories, addCategory, deleteCategory } = useCategories();
+  const [showCategoryModal, setShowCategoryModal] = useState(false);
+  const [newCategoryName, setNewCategoryName] = useState('');
+  const [categoryError, setCategoryError] = useState('');
 
   // Summary Stats
   const [stats, setStats] = useState({
@@ -139,6 +145,39 @@ export default function ProductsPage() {
     exportProductsToCSV(products);
   };
 
+  // ── Category Modal Handlers ──────────────────────────
+  const handleAddCategory = () => {
+    const trimmed = newCategoryName.trim();
+    if (!trimmed) { setCategoryError('Category name cannot be empty.'); return; }
+    if (categories.includes(trimmed)) { setCategoryError('This category already exists.'); return; }
+    addCategory(trimmed);
+    setNewCategoryName('');
+    setCategoryError('');
+  };
+
+  const handleDeleteCategory = (cat) => {
+    let inUse = products.some(p => p.category === cat);
+    if (!inUse) {
+      try {
+        const stored = JSON.parse(localStorage.getItem('fb_products_data_v2') || '[]');
+        if (Array.isArray(stored)) {
+          inUse = stored.some(p => p.category === cat);
+        }
+      } catch {}
+    }
+
+    if (inUse) {
+      const errorMsg = 'Cannot remove this category because it is currently assigned to one or more products. Please reassign or delete those products first.';
+      setCategoryError(errorMsg);
+      alert(errorMsg);
+      return;
+    }
+
+    setCategoryError('');
+    deleteCategory(cat);
+    if (categoryFilter === cat) setCategoryFilter('All');
+  };
+
   const startRecord = totalCount === 0 ? 0 : (page - 1) * pageSize + 1;
   const endRecord = Math.min(page * pageSize, totalCount);
 
@@ -148,43 +187,25 @@ export default function ProductsPage() {
         {/* ── Page Header ────────────────────────────── */}
         <div className={styles.headerRow}>
           <div>
-            <div className={styles.breadcrumbs}>
-              <span>ERP</span> / <span className={styles.breadcrumbActive}>Products</span>
-            </div>
             <div className={styles.titleWrapper}>
               <h1 className={styles.title}>Products</h1>
               <span className={styles.titleBadge}>{stats.totalProducts} Products</span>
             </div>
-            <p className={styles.subtitle}>
-              Manage product codes, HSN codes, stock units, and commercial purchase/sale margins
-            </p>
           </div>
 
           <div className={styles.headerActions}>
+
             <button
               type="button"
               className={styles.btnSecondary}
-              onClick={() => navigate('/dashboard')}
-              title="Go back to Dashboard"
+              onClick={() => {
+                setCategoryError('');
+                setShowCategoryModal(true);
+              }}
+              title="Create, edit or delete product categories"
             >
-              <svg xmlns="http://www.w3.org/2000/svg" width="15" height="15" viewBox="0 0 24 24"
-                fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" style={{ marginRight: '6px' }}>
-                <line x1="19" y1="12" x2="5" y2="12"/>
-                <polyline points="12 19 5 12 12 5"/>
-              </svg>
-              Go Back
+              🏷️ Manage Categories
             </button>
-
-            {products.length === 0 && (
-              <button
-                type="button"
-                className={styles.btnSecondary}
-                onClick={handleImportTemplates}
-                title="Seed standard product templates"
-              >
-                ⚡ Import Templates
-              </button>
-            )}
 
             <button
               type="button"
@@ -204,104 +225,6 @@ export default function ProductsPage() {
               + New Product
             </button>
           </div>
-        </div>
-
-        {/* ── KPI Summary Cards ──────────────────────── */}
-        <div className={styles.kpiGrid}>
-          {/* Total Catalog Items */}
-          <div className={`${styles.kpiCard} ${styles.cardPurple}`}>
-            <div className={styles.kpiTop}>
-              <span className={styles.kpiTitle}>Total Products</span>
-              <div className={styles.kpiIconWrapper} style={{ background: '#f5f3ff', color: '#6d28d9' }}>
-                📦
-              </div>
-            </div>
-            <div className={styles.kpiValue}>{stats.totalProducts}</div>
-            <div className={styles.kpiBottom}>
-              <span>Catalog items</span>
-              <span className={styles.kpiTrendBadge} style={{ background: '#ede9fe', color: '#6d28d9' }}>
-                Inventory Ready
-              </span>
-            </div>
-          </div>
-
-          {/* Active Products */}
-          <div className={`${styles.kpiCard} ${styles.cardEmerald}`}>
-            <div className={styles.kpiTop}>
-              <span className={styles.kpiTitle}>Active For Billing</span>
-              <div className={styles.kpiIconWrapper} style={{ background: '#ecfdf5', color: '#059669' }}>
-                ✓
-              </div>
-            </div>
-            <div className={styles.kpiValue} style={{ color: '#059669' }}>
-              {stats.activeProducts}
-            </div>
-            <div className={styles.kpiBottom}>
-              <span>Ready in sales dropdown</span>
-              <span className={styles.kpiTrendBadge} style={{ background: '#dcfce7', color: '#15803d' }}>
-                100% Available
-              </span>
-            </div>
-          </div>
-
-          {/* Categories Count */}
-          <div className={`${styles.kpiCard} ${styles.cardBlue}`}>
-            <div className={styles.kpiTop}>
-              <span className={styles.kpiTitle}>Categories</span>
-              <div className={styles.kpiIconWrapper} style={{ background: '#eff6ff', color: '#2563eb' }}>
-                🏷️
-              </div>
-            </div>
-            <div className={styles.kpiValue} style={{ color: '#2563eb' }}>
-              {stats.categoriesCount}
-            </div>
-            <div className={styles.kpiBottom}>
-              <span>Steel product classifications</span>
-              <span className={styles.kpiTrendBadge} style={{ background: '#dbeafe', color: '#1d4ed8' }}>
-                Structured
-              </span>
-            </div>
-          </div>
-
-          {/* Low Stock Alerts */}
-          <div className={`${styles.kpiCard} ${styles.cardAmber}`}>
-            <div className={styles.kpiTop}>
-              <span className={styles.kpiTitle}>Reorder Attention</span>
-              <div className={styles.kpiIconWrapper} style={{ background: '#fffbeb', color: '#d97706' }}>
-                ⚠️
-              </div>
-            </div>
-            <div className={styles.kpiValue} style={{ color: '#b45309' }}>
-              {stats.lowStockCount}
-            </div>
-            <div className={styles.kpiBottom}>
-              <span>Below reorder quantity</span>
-              <span className={styles.kpiTrendBadge} style={{ background: '#fef3c7', color: '#b45309' }}>
-                Stock Watch
-              </span>
-            </div>
-          </div>
-        </div>
-
-        {/* ── Segmented Category Filter Pills ────────── */}
-        <div className={styles.quickFiltersRow}>
-          <button
-            type="button"
-            className={`${styles.filterPill} ${categoryFilter === 'All' ? styles.filterPillActive : ''}`}
-            onClick={() => { setCategoryFilter('All'); setPage(1); }}
-          >
-            All Categories
-          </button>
-          {STEEL_CATEGORIES.map((cat) => (
-            <button
-              key={cat}
-              type="button"
-              className={`${styles.filterPill} ${categoryFilter === cat ? styles.filterPillActive : ''}`}
-              onClick={() => { setCategoryFilter(cat); setPage(1); }}
-            >
-              {cat}
-            </button>
-          ))}
         </div>
 
         {/* ── Search & Filter Controls ────────────────── */}
@@ -339,7 +262,7 @@ export default function ProductsPage() {
               onChange={(e) => { setCategoryFilter(e.target.value); setPage(1); }}
             >
               <option value="All">All Categories</option>
-              {STEEL_CATEGORIES.map((cat) => (
+              {categories.map((cat) => (
                 <option key={cat} value={cat}>{cat}</option>
               ))}
             </select>
@@ -370,7 +293,6 @@ export default function ProductsPage() {
                   <tr>
                     <th className={styles.th} style={{ width: '90px' }}>Code</th>
                     <th className={styles.th}>Material Item & Category</th>
-                    <th className={styles.th}>HSN Code</th>
                     <th className={`${styles.th} ${styles.center}`}>Unit</th>
                     <th className={`${styles.th} ${styles.right}`}>Purchase Rate</th>
                     <th className={`${styles.th} ${styles.right}`}>Selling Rate</th>
@@ -382,34 +304,25 @@ export default function ProductsPage() {
                 <tbody>
                   {isLoading ? (
                     <tr>
-                      <td colSpan={9} style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>
+                      <td colSpan={8} style={{ textAlign: 'center', padding: '40px', color: '#64748b' }}>
                         Loading catalog materials…
                       </td>
                     </tr>
                   ) : products.length === 0 ? (
                     <tr>
-                      <td colSpan={9}>
+                      <td colSpan={8}>
                         <div className={styles.emptyContainer}>
                           <div className={styles.emptyTitle}>No products in catalog</div>
                           <p className={styles.emptyText}>
                             Add your first product or import standard templates to start creating invoices and purchases.
                           </p>
-                          <div style={{ display: 'flex', gap: '10px' }}>
-                            <button
-                              type="button"
-                              className={styles.btnSecondary}
-                              onClick={handleImportTemplates}
-                            >
-                              ⚡ Seed Standard Templates
-                            </button>
-                            <button
+                          <button
                               type="button"
                               className={styles.btnPrimary}
                               onClick={() => navigate('/products/new')}
                             >
                               + New Product
                             </button>
-                          </div>
                         </div>
                       </td>
                     </tr>
@@ -430,12 +343,6 @@ export default function ProductsPage() {
                         {/* Name & Category */}
                         <td className={styles.td}>
                           <div className={styles.productIdentityCell}>
-                            <div
-                              className={styles.categoryAvatar}
-                              style={{ background: getCategoryColor(p.category) }}
-                            >
-                              {getCategoryCode(p.category)}
-                            </div>
                             <div className={styles.prodNameBlock}>
                               <span
                                 className={styles.prodName}
@@ -450,10 +357,6 @@ export default function ProductsPage() {
                           </div>
                         </td>
 
-                        {/* HSN */}
-                        <td className={`${styles.td} ${styles.mono}`}>
-                          <span style={{ fontWeight: 600 }}>HSN {p.hsn || '—'}</span>
-                        </td>
 
                         {/* Unit */}
                         <td className={`${styles.td} ${styles.center}`}>
@@ -644,6 +547,121 @@ export default function ProductsPage() {
           </div>
         )}
       </div>
+
+      {/* ── Manage Categories Modal ──────────────────── */}
+      {showCategoryModal && (
+        <div
+          style={{
+            position: 'fixed', inset: 0, zIndex: 1000,
+            background: 'rgba(15,23,42,0.55)', backdropFilter: 'blur(4px)',
+            display: 'flex', alignItems: 'center', justifyContent: 'center',
+          }}
+          onClick={() => setShowCategoryModal(false)}
+        >
+          <div
+            style={{
+              background: '#fff', borderRadius: '14px', padding: '28px 32px',
+              width: '100%', maxWidth: '460px', boxShadow: '0 20px 60px rgba(0,0,0,0.18)',
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px' }}>
+              <div>
+                <h2 style={{ margin: 0, fontSize: '1.1rem', fontWeight: 700, color: '#0f172a' }}>Manage Categories</h2>
+                <p style={{ margin: '4px 0 0', fontSize: '0.8125rem', color: '#64748b' }}>Add or remove product categories</p>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowCategoryModal(false)}
+                style={{ background: 'none', border: 'none', fontSize: '1.25rem', color: '#94a3b8', cursor: 'pointer', lineHeight: 1 }}
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Add new category */}
+            <div style={{ display: 'flex', gap: '8px', marginBottom: '8px' }}>
+              <input
+                type="text"
+                value={newCategoryName}
+                onChange={(e) => { setNewCategoryName(e.target.value); setCategoryError(''); }}
+                onKeyDown={(e) => e.key === 'Enter' && handleAddCategory()}
+                placeholder="e.g. GI Pipes, TMT Bars…"
+                style={{
+                  flex: 1, padding: '8px 12px', borderRadius: '7px',
+                  border: categoryError ? '1.5px solid #ef4444' : '1.5px solid #e2e8f0',
+                  fontSize: '0.875rem', outline: 'none', color: '#0f172a',
+                }}
+                autoFocus
+              />
+              <button
+                type="button"
+                onClick={handleAddCategory}
+                style={{
+                  padding: '8px 16px', borderRadius: '7px', border: 'none',
+                  background: 'linear-gradient(135deg,#7c3aed,#6d28d9)', color: '#fff',
+                  fontWeight: 600, fontSize: '0.875rem', cursor: 'pointer',
+                }}
+              >
+                + Add
+              </button>
+            </div>
+            {categoryError && (
+              <p style={{ margin: '0 0 10px', fontSize: '0.8rem', color: '#ef4444' }}>{categoryError}</p>
+            )}
+
+            {/* Category list */}
+            <div style={{ marginTop: '16px', maxHeight: '260px', overflowY: 'auto', display: 'flex', flexDirection: 'column', gap: '6px' }}>
+              {categories.length === 0 ? (
+                <p style={{ textAlign: 'center', color: '#94a3b8', fontSize: '0.875rem', padding: '20px 0' }}>
+                  No categories yet. Add one above.
+                </p>
+              ) : (
+                categories.map((cat) => (
+                  <div
+                    key={cat}
+                    style={{
+                      display: 'flex', alignItems: 'center', justifyContent: 'space-between',
+                      padding: '8px 12px', borderRadius: '8px', background: '#f8fafc',
+                      border: '1px solid #e2e8f0',
+                    }}
+                  >
+                    <span style={{ fontSize: '0.875rem', fontWeight: 500, color: '#1e293b' }}>{cat}</span>
+                    <button
+                      type="button"
+                      onClick={() => handleDeleteCategory(cat)}
+                      title={`Remove "${cat}"`}
+                      style={{
+                        background: 'none', border: 'none', color: '#ef4444',
+                        cursor: 'pointer', fontSize: '0.8125rem', fontWeight: 600, padding: '2px 6px',
+                        borderRadius: '4px',
+                      }}
+                    >
+                      Remove
+                    </button>
+                  </div>
+                ))
+              )}
+            </div>
+
+            {/* Footer */}
+            <div style={{ marginTop: '20px', display: 'flex', justifyContent: 'flex-end' }}>
+              <button
+                type="button"
+                onClick={() => setShowCategoryModal(false)}
+                style={{
+                  padding: '8px 20px', borderRadius: '7px',
+                  border: '1.5px solid #e2e8f0', background: '#fff',
+                  color: '#475569', fontWeight: 600, fontSize: '0.875rem', cursor: 'pointer',
+                }}
+              >
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </ERPLayout>
   );
 }

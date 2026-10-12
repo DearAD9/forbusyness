@@ -5,6 +5,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from config import FRONTEND_ORIGIN
 from database import init_db
 from routes.auth import router as auth_router
+from routes.reports import router as reports_router
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
@@ -34,6 +35,10 @@ app.add_middleware(
 # Mount auth routes under both /api/auth and /auth for compatibility
 app.include_router(auth_router, prefix="/api/auth")
 app.include_router(auth_router, prefix="/auth")
+
+# Mount reports routes under both /api/reports and /reports
+app.include_router(reports_router, prefix="/api/reports")
+app.include_router(reports_router, prefix="/reports")
 
 @app.get("/api/health")
 async def health_check():
